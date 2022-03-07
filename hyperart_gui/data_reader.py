@@ -47,6 +47,7 @@ class DataReader:
         self.elemTypeMap["HYPER_POLY"] = HYPER_POLY
 
     # @staticmethod
+    # https://docs.python.org/3/library/xml.etree.elementtree.html
     # def collectXML(fileName):
     #     parse_ast
     # /*!
@@ -330,7 +331,43 @@ class DataReader:
     # }
 
     def readElem(self, m: Diagram, root) -> bool:
-        pass
+        read_ok = False
+        z_order = 1  # start with a low z-order
+        e = 0
+        # TODO: Check that these are the correct attributes references
+        type_attr = root.attribute["type"].value()
+        if not self.elemTypeMap.contains(type_attr):
+            return False
+        e = self.createElementObject(self.elemTypeMap[type_attr])
+        if not e:
+            return False
+        node = root.firstChild()
+        # Editied to here
+        while not node.isNull():
+            if node.isElement():
+                read_ok = False
+                if node.nodeName() == "z_order":
+                    z_order = node.firstChild().toText().nodeValue().toInt()
+                    read_ok = True
+                if node.nodeName() == "color":
+                    color_attr = (
+                        node.firstChild().toText().nodeValue().stripWhiteSpace()
+                    )
+                    if not self.colorMap.contains(color_attr):
+                        return False
+                    e.setColor(self.colorMap[color_attr])
+                    read_ok = True
+                if node.nodeName() == "perm":
+                    perm = Permutation(m.numColors())
+                    read_ok = self.readPerm(m, node, perm)
+                    e.setPerm(perm)
+                if node.nodeName() == "adjacency":
+                    read_ok = self.readAdjacency(m, node)
+                if node.nodeName() == "label":
+                    label = node.firstChild().toText().nodeValue().stripWhiteSpace()
+                    e.setLabel(label)
+                    read_ok = True
+            node = node.nextSibling()
 
     # bool DataReader::readElem(self, m:Diagram, root)
     # {
