@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HyperArt</class>
+ <widget class="QMainWindow" name="HyperArt">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>754</width>
+    <height>627</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HyperArt</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="Toolbar" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="label" stdset="0">
+    <string>File Tools</string>
+   </property>
+   <addaction name="fileNewAction"/>
+   <addaction name="fileOpenAction"/>
+   <addaction name="filePrintAction"/>
+  </widget>
+  <widget class="QToolBar" name="ZoomToolbar" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="label" stdset="0">
+    <string>Zoom Tools</string>
+   </property>
+   <addaction name="zoomDefaultAction"/>
+   <addaction name="zoomZoom_InAction"/>
+   <addaction name="zoomZoom_outAction"/>
+  </widget>
+  <widget class="QToolBar" name="AnimateToolbar" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="label" stdset="0">
+    <string>Animation Tools</string>
+   </property>
+   <addaction name="animatePlayAction"/>
+   <addaction name="animatePauseAction"/>
+   <addaction name="animateStopAction"/>
+   <addaction name="animatePrevAction"/>
+   <addaction name="animateNextAction"/>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>459</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="fileNewAction"/>
+    <addaction name="fileOpenAction"/>
+    <addaction name="fileSaveAction"/>
+    <addaction name="fileSaveAsAction"/>
+    <addaction name="separator"/>
+    <addaction name="filePrintAction"/>
+    <addaction name="separator"/>
+    <addaction name="fileExitAction"/>
+   </widget>
+   <widget class="QMenu" name="Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <widget class="QMenu" name="popupMenu_10">
+     <property name="title">
+      <string>&amp;Preferences</string>
+     </property>
+     <addaction name="editPreferencesNumber_of_LayersAction"/>
+    </widget>
+    <addaction name="separator"/>
+    <addaction name="editPreferencesAction"/>
+    <addaction name="popupMenu_10"/>
+    <addaction name="separator"/>
+    <addaction name="editUndoAction"/>
+    <addaction name="editRedoAction"/>
+    <addaction name="separator"/>
+    <addaction name="editCutAction"/>
+    <addaction name="editCopyAction"/>
+    <addaction name="editPasteAction"/>
+    <addaction name="separator"/>
+    <addaction name="editFindAction"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="viewToggle_FrameAction"/>
+   </widget>
+   <widget class="QMenu" name="Zoom">
+    <property name="title">
+     <string>&amp;Zoom</string>
+    </property>
+    <addaction name="zoomZoom_InAction"/>
+    <addaction name="zoomZoom_outAction"/>
+    <addaction name="zoomDefaultAction"/>
+   </widget>
+   <widget class="QMenu" name="Animate">
+    <property name="title">
+     <string>&amp;Animate</string>
+    </property>
+    <addaction name="animatePlayAction"/>
+    <addaction name="animatePauseAction"/>
+    <addaction name="animateStopAction"/>
+    <addaction name="animatePrevAction"/>
+    <addaction name="animateNextAction"/>
+   </widget>
+   <widget class="QMenu" name="helpMenu">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="helpContentsAction"/>
+    <addaction name="helpIndexAction"/>
+    <addaction name="separator"/>
+    <addaction name="helpAboutAction"/>
+   </widget>
+   <addaction name="fileMenu"/>
+   <addaction name="Edit"/>
+   <addaction name="View"/>
+   <addaction name="Zoom"/>
+   <addaction name="Animate"/>
+   <addaction name="helpMenu"/>
+  </widget>
+  <action name="fileNewAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image1</normaloff>../../hyperart/image1</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New</string>
+   </property>
+   <property name="iconText">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileNewAction</cstring>
+   </property>
+  </action>
+  <action name="fileOpenAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image2</normaloff>../../hyperart/image2</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open...</string>
+   </property>
+   <property name="iconText">
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileOpenAction</cstring>
+   </property>
+  </action>
+  <action name="fileSaveAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image3</normaloff>../../hyperart/image3</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="iconText">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileSaveAction</cstring>
+   </property>
+  </action>
+  <action name="fileSaveAsAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save &amp;As...</string>
+   </property>
+   <property name="iconText">
+    <string>Save As</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileSaveAsAction</cstring>
+   </property>
+  </action>
+  <action name="filePrintAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image4</normaloff>../../hyperart/image4</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Print...</string>
+   </property>
+   <property name="iconText">
+    <string>Print</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>filePrintAction</cstring>
+   </property>
+  </action>
+  <action name="fileExitAction">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="iconText">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileExitAction</cstring>
+   </property>
+  </action>
+  <action name="editUndoAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image5</normaloff>../../hyperart/image5</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Undo</string>
+   </property>
+   <property name="iconText">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editUndoAction</cstring>
+   </property>
+  </action>
+  <action name="editRedoAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image6</normaloff>../../hyperart/image6</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Redo</string>
+   </property>
+   <property name="iconText">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editRedoAction</cstring>
+   </property>
+  </action>
+  <action name="editCutAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image7</normaloff>../../hyperart/image7</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Cut</string>
+   </property>
+   <property name="iconText">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editCutAction</cstring>
+   </property>
+  </action>
+  <action name="editCopyAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image8</normaloff>../../hyperart/image8</iconset>
+   </property>
+   <property name="text">
+    <string>C&amp;opy</string>
+   </property>
+   <property name="iconText">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editCopyAction</cstring>
+   </property>
+  </action>
+  <action name="editPasteAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image9</normaloff>../../hyperart/image9</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Paste</string>
+   </property>
+   <property name="iconText">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editPasteAction</cstring>
+   </property>
+  </action>
+  <action name="editFindAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image10</normaloff>../../hyperart/image10</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Find...</string>
+   </property>
+   <property name="iconText">
+    <string>Find</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editFindAction</cstring>
+   </property>
+  </action>
+  <action name="helpContentsAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Contents...</string>
+   </property>
+   <property name="iconText">
+    <string>Contents</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>helpContentsAction</cstring>
+   </property>
+  </action>
+  <action name="helpIndexAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Index...</string>
+   </property>
+   <property name="iconText">
+    <string>Index</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>helpIndexAction</cstring>
+   </property>
+  </action>
+  <action name="helpAboutAction">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+   <property name="iconText">
+    <string>About</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>helpAboutAction</cstring>
+   </property>
+  </action>
+  <action name="animatePlayAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image11</normaloff>../../hyperart/image11</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Play</string>
+   </property>
+   <property name="iconText">
+    <string>Play</string>
+   </property>
+   <property name="shortcut">
+    <string>X</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>animatePlayAction</cstring>
+   </property>
+  </action>
+  <action name="animatePauseAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image12</normaloff>../../hyperart/image12</iconset>
+   </property>
+   <property name="text">
+    <string>P&amp;ause</string>
+   </property>
+   <property name="iconText">
+    <string>Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>animatePauseAction</cstring>
+   </property>
+  </action>
+  <action name="animateStopAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image13</normaloff>../../hyperart/image13</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Stop</string>
+   </property>
+   <property name="iconText">
+    <string>Stop</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>animateStopAction</cstring>
+   </property>
+  </action>
+  <action name="animatePrevAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image14</normaloff>../../hyperart/image14</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Back step</string>
+   </property>
+   <property name="iconText">
+    <string>Back step</string>
+   </property>
+   <property name="shortcut">
+    <string>B</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>animatePrevAction</cstring>
+   </property>
+  </action>
+  <action name="animateNextAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image15</normaloff>../../hyperart/image15</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Next step</string>
+   </property>
+   <property name="iconText">
+    <string>Next step</string>
+   </property>
+   <property name="shortcut">
+    <string>N</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>animateNextAction</cstring>
+   </property>
+  </action>
+  <action name="zoomZoom_InAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image16</normaloff>../../hyperart/image16</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom &amp;In</string>
+   </property>
+   <property name="iconText">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>=</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomZoom_InAction</cstring>
+   </property>
+  </action>
+  <action name="zoomZoom_outAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image17</normaloff>../../hyperart/image17</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom &amp;out</string>
+   </property>
+   <property name="iconText">
+    <string>Zoom out</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomZoom_outAction</cstring>
+   </property>
+  </action>
+  <action name="zoomDefaultAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../../hyperart/image18</normaloff>../../hyperart/image18</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Default</string>
+   </property>
+   <property name="iconText">
+    <string>Default</string>
+   </property>
+   <property name="shortcut">
+    <string>0</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomDefaultAction</cstring>
+   </property>
+  </action>
+  <action name="viewToggle_FrameAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Frame</string>
+   </property>
+   <property name="iconText">
+    <string>Frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>viewToggle_FrameAction</cstring>
+   </property>
+  </action>
+  <action name="editPreferencesAction">
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+   <property name="iconText">
+    <string>Preferences</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editPreferencesAction</cstring>
+   </property>
+  </action>
+  <action name="editPreferencesNumber_of_LayersAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Number of Layers</string>
+   </property>
+   <property name="iconText">
+    <string>Number of Layers</string>
+   </property>
+   <property name="shortcut">
+    <string>L</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>editPreferencesNumber_of_LayersAction</cstring>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Q3MainWindow</class>
+   <extends>QWidget</extends>
+   <header>q3mainwindow.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QToolBar</class>
+   <extends>QWidget</extends>
+   <header>QToolBar.h</header>
+  </customwidget>
+ </customwidgets>
+ <includes>
+  <include location="local">diagram.h</include>
+  <include location="global">qprinter.h</include>
+  <include location="local">regularpgon.h</include>
+  <include location="local">diagramview.h</include>
+  <include location="local">poincareview.h</include>
+  <include location="local">defs.h</include>
+  <include location="global">qmessagebox.h</include>
+  <include location="global">qinputdialog.h</include>
+  <include location="local">datareader.h</include>
+ </includes>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>fileNewAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>fileNew()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileOpenAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>fileOpen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileSaveAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>fileSave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileSaveAsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>fileSaveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filePrintAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>filePrint()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileExitAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>fileExit()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editUndoAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editUndo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editRedoAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editRedo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editCutAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editCut()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editCopyAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editCopy()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editPasteAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editPaste()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editFindAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editFind()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpIndexAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>helpIndex()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpContentsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>helpContents()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helpAboutAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>helpAbout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>animatePlayAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>animatePlay()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>animatePauseAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>animatePause()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>animateStopAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>animateStop()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>animateNextAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>animateNext()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>animatePrevAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>animatePrev()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>viewToggle_FrameAction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>HyperArt</receiver>
+   <slot>viewToggle_FrameAction_toggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zoomDefaultAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>zoomDefaultAction_activated()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zoomZoom_InAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>zoomZoom_InAction_activated()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zoomZoom_outAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>zoomZoom_outAction_activated()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editPreferencesNumber_of_LayersAction</sender>
+   <signal>triggered()</signal>
+   <receiver>HyperArt</receiver>
+   <slot>editPreferencesNumber_of_LayersAction_activated()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
