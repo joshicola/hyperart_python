@@ -1,11 +1,17 @@
-- [ ] data_reader
+- [x] data_reader
     - [x] DataReaderRegularPgon(DataReader)
     - [x] DataReaderIrregularPgon(DataReader)
-    - [ ] docstrings
+    - [x] docstrings
     - [ ] tests?
 - [x] defs
   - [x] classes
   - [x] docstrings
+- [x] matrix
+  - [x] docstrings
+
+- [ ] element
+- [ ] permutation
+- [ ] transformation
 
 - [ ] diagram
 - [ ] layer
@@ -13,19 +19,15 @@
 - [ ] pgonedge
 - [ ] regular_pgon
 - [ ] irregular_pgon
-- [ ] transformation
-- [ ] hyperart_window
-- [x,] matrix
 
-- [ ] element
-- [ ] permutation
-- [ ] transformation
-
-- [ ] canvaselemnts
 - [ ] diagramview
-
 - [ ] poincareview
+
 - [ ] qdocument
 - [ ] qdocviewer
+
+- [ ] hyperart_window
+- [ ] canvaselemnts
+
 
 - [ ] Fix all variables to snake_case

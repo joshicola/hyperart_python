@@ -65,15 +65,15 @@ class DataReader:
 
         # determine document type from the root node
         # and delegate Diagram object creation to appropriate reader
-        type = DataReader.dgramType(root)
-        if DiagramType.REGULAR_PGON == type:
+        elem_type = DataReader.dgramType(root)
+        if DiagramType.REGULAR_PGON == elem_type:
             reader = DataReaderRegularPgon()
             rp = reader.readXML(root)
             # dynamic_cast<RegularPgon *>(reader.readXML(doc));
             if rp:
                 rp.init()
                 return rp
-        elif DiagramType.IRREGULAR_PGON == type:
+        elif DiagramType.IRREGULAR_PGON == elem_type:
             reader = DataReaderIrregularPgon()
             ip = reader.readXML(root)
             # dynamic_cast<IrregularPgon *>(reader.readXML(doc));
@@ -331,11 +331,11 @@ class DataReader:
                     readOk = True
         return readOk, x, y
 
-    def createElementObject(self, type: ElemType) -> Element:
+    def createElementObject(self, elem_type: ElemType) -> Element:
         """Create an element object of the given type.
 
         Args:
-            type (ElemType): Initialized element type.
+            elem_type (ElemType): Initialized element type.
 
         Raises:
             NotImplementedError: Error when Type is not implemented.
@@ -343,17 +343,17 @@ class DataReader:
         Returns:
             Element: Initialized element object.
         """
-        if type == ElemType.EUCLID_POLYLINE:
+        if elem_type == ElemType.EUCLID_POLYLINE:
             return EuclidPolyLine()
-        elif type == ElemType.EUCLID_POLY:
+        elif elem_type == ElemType.EUCLID_POLY:
             return EuclidPoly()
-        elif type == ElemType.CIRCLE:
+        elif elem_type == ElemType.CIRCLE:
             return Circle()
-        elif type == ElemType.HYPER_POLYLINE:
+        elif elem_type == ElemType.HYPER_POLYLINE:
             return HyperPolyLine()
-        elif type == ElemType.HYPER_POLY:
+        elif elem_type == ElemType.HYPER_POLY:
             return HyperPoly()
-        elif type == ElemType.ELEMENT:
+        elif elem_type == ElemType.ELEMENT:
             # TODO: Implement this
             raise NotImplementedError
 
