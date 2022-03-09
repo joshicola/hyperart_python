@@ -28,7 +28,6 @@ class DataReader:
     """
 
     def __init__(self):
-        # m = diag;
         self.reflSymMap = {}
         self.reflSymMap["REFL_NONE"] = ReflSymType.REFL_NONE
         self.reflSymMap["REFL_EDGE_BISECTOR"] = ReflSymType.REFL_EDGE_BISECTOR
@@ -47,30 +46,8 @@ class DataReader:
 
     # @staticmethod
     # https://docs.python.org/3/library/xml.etree.elementtree.html
+    # unnecessary with xml.etree.ElementTree
     # def collectXML(fileName):
-    #     parse_ast
-    # /*!
-    #     \fn DataReader::collectXML(const QString &fileName)
-    #     Read all the XML file into string xmlText
-    # */
-    # bool DataReader::collectXML(const QString &fileName)
-    # {
-    #     QFile f(fileName);
-    #     if (!f.open(QIODevice::ReadOnly))
-    #         return false;
-
-    #     QString line = "";
-    #     Q3TextStream stream(&f);
-    #     DataReader::xmlText = "";
-    #     while (!stream.atEnd())
-    #     {
-    #         line = stream.readLine();
-    #         DataReader::xmlText += line + "\n";
-    #     }
-
-    #     f.close();
-    #     return True;
-    # }
 
     @staticmethod
     def createDiagram(fileName: str) -> Diagram:
@@ -81,7 +58,7 @@ class DataReader:
             with open(fileName, "r") as f:
                 xmlText = f.read()
         except FileNotFoundError:
-            log.error("File not found: " + fileName)
+            log.error("File not found: %s", fileName)
             return None
         # TODO: Can I load this directly from the file?
         root = ET.fromstring(xmlText)
@@ -107,17 +84,15 @@ class DataReader:
         return None
 
     @staticmethod
-    def dgramType(doc) -> int:
+    def dgramType(doc) -> DiagramType:
         """
-        _summary_
+        Get the diagram type from the root node.
 
         Args:
-            doc (_type_): _description_
+            doc (xml.etree.ElementTree): root node of the xml document
 
         Returns:
-            int: _description_
-
-        TODO: Get this from the file.
+            DiagramType: The type of diagram we are dealing with.
         """
         designType = doc.get("type")
         if "REGULAR_PGON" == designType:
@@ -128,22 +103,31 @@ class DataReader:
             log.warning("DataReader::dgramType : Not a valid diagram type")
             return DiagramType.DIAGRAM
 
-    def readMetadata(self, m: Diagram, root) -> bool:
+    def readMetadata(self, m: Diagram, root: ET) -> bool:
+        """Read the metadata from the xml tree.
+
+        Args:
+            m (Diagram): The diagram to read the metadata into.
+            root (xml.etree.ElementTree): XML tree root node.
+
+        Returns:
+            bool: Success or failure.
+        """
         readOk = False
         for metadata in root:
             if metadata.tag == "colors":
                 readOk = self.readColors(m, metadata)
         return readOk
 
-    def readColors(self, m: Diagram, root):
-        """_summary_
+    def readColors(self, m: Diagram, root) -> bool:
+        """Read color information from the xml tree into diagram.
 
         Args:
-            m (Diagram): _description_
-            root (_type_): _description_
+            m (Diagram): Diagram to read the colors into.
+            root (xml.etree.ElementTree): xml tree root node.
 
         Returns:
-            _type_: _description_
+            bool: Success or failure.
         """
         readOk = False
         # TODO: Check this
@@ -155,15 +139,15 @@ class DataReader:
             readOk = self.readColor(m, color)
         return readOk
 
-    def readColor(self, m: Diagram, root):
-        """_summary_
+    def readColor(self, m: Diagram, root) -> bool:
+        """Read specific color information from the xml tree into diagram.
 
         Args:
-            m (Diagram): _description_
-            root (_type_): _description_
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
 
         Returns:
-            _type_: _description_
+            bool: success or failure.
         """
         readOk = False
         cid = 0
@@ -184,16 +168,16 @@ class DataReader:
             m.setColorMapValue(cid, c)
         return readOk
 
-    def readPerm(self, m: Diagram, root, perm: Permutation):
-        """_summary_
+    def readPerm(self, m: Diagram, root: ET, perm: Permutation) -> bool:
+        """Read permutation information from the xml tree into diagram.
 
         Args:
-            m (Diagram): _description_
-            root (_type_): _description_
-            perm (Permutation): _description_
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
+            perm (Permutation): Initialized Permutaiton object.
 
         Returns:
-            _type_: _description_
+            bool: Success or failure.
         """
         readOk = False
         permutations = list(root)
@@ -205,7 +189,16 @@ class DataReader:
                     readOk = True
         return readOk
 
-    def readAdjacency(self, m: Diagram, root) -> bool:
+    def readAdjacency(self, m: Diagram, root: ET) -> bool:
+        """Read adjacency information from the xml tree into diagram.
+
+        Args:
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
+
+        Returns:
+            bool: Success or failure.
+        """
         readOk = False
         adjacencies = list(root)
         for i in range(m.p()):
@@ -213,7 +206,16 @@ class DataReader:
                 readOk = self.readEntry(m, adjacencies[i])
         return readOk
 
-    def readEntry(self, m: Diagram, root) -> bool:
+    def readEntry(self, m: Diagram, root: ET) -> bool:
+        """Read Entry information from the xml tree into diagram.
+
+        Args:
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
+
+        Returns:
+            bool: Success or failure.
+        """
         readOk = False
         e = int(root.attrib["e"])
         for attr in root:
@@ -233,22 +235,31 @@ class DataReader:
                 readOk = self.readPerm(m, attr, m.edges[e].colorPerm())
         return readOk
 
-    def readElements(self, m: Diagram, root) -> bool:
+    def readElements(self, m: Diagram, root: ET) -> bool:
+        """Read elements from the xml tree into diagram.
+
+        Args:
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
+
+        Returns:
+            bool: success or failure.
+        """
         readOk = False
         for element in root:
             if element.tag == "elem":
                 readOk = self.readElement(m, element)
         return readOk
 
-    def readElement(self, m: Diagram, root) -> bool:
-        """_summary_
+    def readElement(self, m: Diagram, root: ET) -> bool:
+        """Read element from the xml tree into diagram.
 
         Args:
-            m (Diagram): _description_
-            root (_type_): _description_
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
 
         Returns:
-            bool: _description_
+            bool: Success or failure.
         """
         readOk = False
         z_order = 1  # start with a low z-order
@@ -278,15 +289,15 @@ class DataReader:
         m.fundPat().addElement(e)
         return readOk
 
-    def readPoints(self, root, e: Element) -> bool:
-        """_summary_
+    def readPoints(self, root: ET, e: Element) -> bool:
+        """Read points from the xml tree into element.
 
         Args:
-            root (_type_): _description_
-            e (Element): _description_
+            root (xml.etree.ElementTree): xml tree root node.
+            e (Element): Element to read the points into.
 
         Returns:
-            bool: _description_
+            bool: Success or failure.
         """
         readOk = False
         for point in root:
@@ -297,14 +308,14 @@ class DataReader:
                 e.addPoint(pt)
         return readOk
 
-    def readPoint(self, root) -> bool:
-        """_summary_
+    def readPoint(self, root: ET) -> bool:
+        """Read point from the xml tree into element.
 
         Args:
-            root (_type_): _description_
+            root (xml.etree.ElementTree): XML tree root node.
 
         Returns:
-            bool: _description_
+            bool: Success or failure.
         """
         readOk, x, y = False, 0.0, 0.0
         for coord in root:
@@ -321,16 +332,16 @@ class DataReader:
         return readOk, x, y
 
     def createElementObject(self, type: ElemType) -> Element:
-        """_summary_
+        """Create an element object of the given type.
 
         Args:
-            type (ElemType): _description_
+            type (ElemType): Initialized element type.
 
         Raises:
-            NotImplementedError: _description_
+            NotImplementedError: Error when Type is not implemented.
 
         Returns:
-            Element: _description_
+            Element: Initialized element object.
         """
         if type == ElemType.EUCLID_POLYLINE:
             return EuclidPolyLine()
@@ -348,17 +359,19 @@ class DataReader:
 
 
 class DataReaderRegularPgon(DataReader):
+    """Data reader for regular polygons."""
+
     def __init__(self):
         super().__init__()
 
-    def readXML(self, doc):
-        """_summary_
+    def readXML(self, doc) -> Diagram:
+        """Read the xml tree into diagram.
 
         Args:
-            doc (_type_): _description_
+            doc (xml.etree.ElementTree): Root of the xml tree.
 
         Returns:
-            _type_: _description_
+            Diagram: Rendered diagram or None
         """
         m = RegularPgon()
 
@@ -400,22 +413,24 @@ class DataReaderRegularPgon(DataReader):
                 readOk = self.readElements(m, doc_element)
         if readOk:
             return m
-        return 0
+        return None
 
 
 class DataReaderIrregularPgon(DataReader):
+    """Data reader for irregular polygons."""
+
     def __init__(self):
         super().__init__()
 
-    def readQlist(self, m, root):
-        """_summary_
+    def readQlist(self, m, root: ET) -> bool:
+        """Read qlist from the xml tree into diagram.
 
         Args:
-            m (_type_): _description_
-            root (_type_): _description_
+            m (Diagram): Diagram to read the color into.
+            root (xml.etree.ElementTree): xml tree root node.
 
         Returns:
-            _type_: _description_
+            bool: Success or failure.
         """
         readOk = True
 
@@ -429,15 +444,14 @@ class DataReaderIrregularPgon(DataReader):
                     log.warning("Failed to read q value.")
         return readOk
 
-    def readQ(self, root):
-        """_summary_
+    def readQ(self, root: ET):
+        """Read q from the xml tree into diagram.
 
         Args:
-            root (_type_): _description_
-            qval (_type_): _description_
+            root (xml.etree.ElementTree): xml tree root node.
 
         Returns:
-            _type_: _description_
+            bool, int: Success or failure, q value.
         """
         text = root.text
         if text:
@@ -446,13 +460,13 @@ class DataReaderIrregularPgon(DataReader):
         return False, 0
 
     def readXML(self, doc):
-        """_summary_
+        """Read the xml tree into diagram.
 
         Args:
-            doc (_type_): _description_
+            doc (xml.etree.ElementTree): xml tree root node.
 
         Returns:
-            _type_: _description_
+            Diagram: Diagram or None
         """
         m = IrregularPgon()
 
@@ -460,7 +474,6 @@ class DataReaderIrregularPgon(DataReader):
             log.warning("Not a valid motif xml document.")
             return None
 
-        # diagram = copy.deepcopy(m)  # do I really need this?
         for doc_element in doc:
             readOk = False
             if doc_element.tag == "metadata":

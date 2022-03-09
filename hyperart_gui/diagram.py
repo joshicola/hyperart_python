@@ -41,6 +41,12 @@ class Diagram(QTextDocument):
             e.setNumColors(self._numColors)
             self.edges.append(e)
 
+    def setNumColors(self, v: int):
+        self._numColors = v
+        self._colorMap.clear()
+        for i in range(self._numColors):
+            self._colorMap[i] = ""
+
     def numColors(self) -> int:
         return self._numColors
 
