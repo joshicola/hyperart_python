@@ -14,11 +14,13 @@
 - [ ] transformation
 
 - [ ] diagram
-- [ ] layer
-- [ ] parameters
-- [ ] pgonedge
 - [ ] regular_pgon
 - [ ] irregular_pgon
+- [ ] pgonedge
+- [ ] layer
+- [ ] parameters
+
+
 
 - [ ] diagramview
 - [ ] poincareview

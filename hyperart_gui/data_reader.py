@@ -47,18 +47,18 @@ class DataReader:
     # @staticmethod
     # https://docs.python.org/3/library/xml.etree.elementtree.html
     # unnecessary with xml.etree.ElementTree
-    # def collectXML(fileName):
+    # def collectXML(file_name):
 
     @staticmethod
-    def createDiagram(fileName: str) -> Diagram:
+    def createDiagram(file_name: str) -> Diagram:
         """
         Create a diagram from a file.
         """
         try:
-            with open(fileName, "r") as f:
+            with open(file_name, "r", encoding="utf-8") as f:
                 xmlText = f.read()
         except FileNotFoundError:
-            log.error("File not found: %s", fileName)
+            log.error("File not found: %s", file_name)
             return None
         # TODO: Can I load this directly from the file?
         root = ET.fromstring(xmlText)
