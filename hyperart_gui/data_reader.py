@@ -1,24 +1,23 @@
+import copy
 import logging
 import xml.etree.ElementTree as ET
 
-from black import parse_ast
+from PyQt6.QtGui import QColor
 
-from .defs import (
-    CIRCLE,
-    DIAGRAM,
-    EUCLID_POLY,
-    EUCLID_POLYLINE,
-    HYPER_POLY,
-    HYPER_POLYLINE,
-    IRREGULAR_PGON,
-    REFL_EDGE_BISECTOR,
-    REFL_NONE,
-    REFL_PGON_RADIUS,
-    REFLECTION,
-    REGULAR_PGON,
-    ROTATION,
-)
+from .defs import DiagramType, ElemType, Orientation, ReflSymType
 from .diagram import Diagram
+from .element import (
+    Circle,
+    Element,
+    EuclidPoly,
+    EuclidPolyLine,
+    HyperPoly,
+    HyperPolyLine,
+    Point,
+)
+from .irregular_pgon import IrregularPgon
+from .permutation import Permutation
+from .regular_pgon import RegularPgon
 
 log = logging.getLogger(__name__)
 
@@ -31,20 +30,20 @@ class DataReader:
     def __init__(self):
         # m = diag;
         self.reflSymMap = {}
-        self.reflSymMap["REFL_NONE"] = REFL_NONE
-        self.reflSymMap["REFL_EDGE_BISECTOR"] = REFL_EDGE_BISECTOR
-        self.reflSymMap["REFL_PGON_RADIUS"] = REFL_PGON_RADIUS
+        self.reflSymMap["REFL_NONE"] = ReflSymType.REFL_NONE
+        self.reflSymMap["REFL_EDGE_BISECTOR"] = ReflSymType.REFL_EDGE_BISECTOR
+        self.reflSymMap["REFL_PGON_RADIUS"] = ReflSymType.REFL_PGON_RADIUS
 
         self.orienMap = {}
-        self.orienMap["ROTATION"] = ROTATION
-        self.orienMap["REFLECTION"] = REFLECTION
+        self.orienMap["ROTATION"] = Orientation.ROTATION
+        self.orienMap["REFLECTION"] = Orientation.REFLECTION
 
         self.elemTypeMap = {}
-        self.elemTypeMap["EUCLID_POLYLINE"] = EUCLID_POLYLINE
-        self.elemTypeMap["EUCLID_POLY"] = EUCLID_POLY
-        self.elemTypeMap["CIRCLE"] = CIRCLE
-        self.elemTypeMap["HYPER_POLYLINE"] = HYPER_POLYLINE
-        self.elemTypeMap["HYPER_POLY"] = HYPER_POLY
+        self.elemTypeMap["EUCLID_POLYLINE"] = ElemType.EUCLID_POLYLINE
+        self.elemTypeMap["EUCLID_POLY"] = ElemType.EUCLID_POLY
+        self.elemTypeMap["CIRCLE"] = ElemType.CIRCLE
+        self.elemTypeMap["HYPER_POLYLINE"] = ElemType.HYPER_POLYLINE
+        self.elemTypeMap["HYPER_POLY"] = ElemType.HYPER_POLY
 
     # @staticmethod
     # https://docs.python.org/3/library/xml.etree.elementtree.html
@@ -70,7 +69,7 @@ class DataReader:
     #     }
 
     #     f.close();
-    #     return true;
+    #     return True;
     # }
 
     @staticmethod
@@ -84,19 +83,20 @@ class DataReader:
         except FileNotFoundError:
             log.error("File not found: " + fileName)
             return None
+        # TODO: Can I load this directly from the file?
         root = ET.fromstring(xmlText)
 
         # determine document type from the root node
         # and delegate Diagram object creation to appropriate reader
         type = DataReader.dgramType(root)
-        if REGULAR_PGON == type:
+        if DiagramType.REGULAR_PGON == type:
             reader = DataReaderRegularPgon()
             rp = reader.readXML(root)
             # dynamic_cast<RegularPgon *>(reader.readXML(doc));
             if rp:
                 rp.init()
                 return rp
-        elif IRREGULAR_PGON == type:
+        elif DiagramType.IRREGULAR_PGON == type:
             reader = DataReaderIrregularPgon()
             ip = reader.readXML(root)
             # dynamic_cast<IrregularPgon *>(reader.readXML(doc));
@@ -119,409 +119,232 @@ class DataReader:
 
         TODO: Get this from the file.
         """
-        root = doc.documentElement()
-        designType = root.attributeNode("type").value()
+        designType = doc.get("type")
         if "REGULAR_PGON" == designType:
-            return REGULAR_PGON
+            return DiagramType.REGULAR_PGON
         elif "IRREGULAR_PGON" == designType:
-            return IRREGULAR_PGON
+            return DiagramType.IRREGULAR_PGON
         else:
             log.warning("DataReader::dgramType : Not a valid diagram type")
-            return DIAGRAM
+            return DiagramType.DIAGRAM
 
     def readMetadata(self, m: Diagram, root) -> bool:
-        pass
-
-    # bool DataReader::readMetadata(self, m:Diagram, root)
-    # {
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             if (node.nodeName() == "colors")
-    #             {
-    #                 readOk = false;
-    #                 readOk = readColors(m, node);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        readOk = False
+        for metadata in root:
+            if metadata.tag == "colors":
+                readOk = self.readColors(m, metadata)
+        return readOk
 
     def readColors(self, m: Diagram, root):
-        pass
+        """_summary_
 
-    # bool DataReader::readColors(self, m:Diagram, root)
-    # {
-    #     bool readOk = false;
-    #     QDomAttr colorCount = root.toElement().attributeNode("count");
-    #     m->setNumColors(colorCount.value().toInt());
-    #     QDomNode node = root.firstChild();
-    #     for (int i = 0; i < m->numColors(); i++)
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             if (node.nodeName() == "color")
-    #             {
-    #                 readOk = readColor(m, node);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        Args:
+            m (Diagram): _description_
+            root (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        readOk = False
+        # TODO: Check this
+        colorCount = int(root.attrib["count"])
+        m.setNumColors(int(colorCount))
+        colors = list(root)
+        for i in range(colorCount):
+            color = colors[i]
+            readOk = self.readColor(m, color)
+        return readOk
 
     def readColor(self, m: Diagram, root):
-        pass
+        """_summary_
 
-    # bool DataReader::readColor(self, m:Diagram, root)
-    # {
-    #     bool readOk = false;
-    #     unsigned int cid;
-    #     QColor c("#000000");
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "cid")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 if (!text.isNull())
-    #                 {
-    #                     cid = text.nodeValue().toInt();
-    #                     readOk = true;
-    #                 }
-    #             }
-    #             if (node.nodeName() == "hex")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 if (!text.isNull())
-    #                 {
-    #                     c = "#" + text.nodeValue().stripWhiteSpace();
-    #                     readOk = true;
-    #                 }
-    #             }
-    #         }
-    #         m->setColorMapVal(cid, c);
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        Args:
+            m (Diagram): _description_
+            root (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        readOk = False
+        cid = 0
+        c = QColor("#000000")
+        for attr in root:
+            if attr.tag == "cid":
+                text = attr.text
+                if text:
+                    cid = int(attr.text.strip())
+                    readOk = True
+            elif attr.tag == "hex":
+                text = attr.text
+                if text:
+                    c = QColor("#" + attr.text.strip())
+                    readOk = True
+        # Check this with the cpp, this seems like it should be the way.
+        if readOk:
+            m.setColorMapValue(cid, c)
+        return readOk
 
     def readPerm(self, m: Diagram, root, perm: Permutation):
-        pass
+        """_summary_
 
-    # bool DataReader::readPerm(self, m:Diagram, root, Permutation &perm)
-    # {
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     for (int i = 0; i < m->numColors(); i++)
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "perm")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 if (!text.isNull())
-    #                 {
-    #                     perm[i] = text.nodeValue().toInt();
-    #                     readOk = true;
-    #                 }
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        Args:
+            m (Diagram): _description_
+            root (_type_): _description_
+            perm (Permutation): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        readOk = False
+        permutations = list(root)
+        for i in range(m.numColors()):
+            if permutations[i].tag == "perm":
+                text = permutations[i].text
+                if text:
+                    perm[i] = int(text.strip())
+                    readOk = True
+        return readOk
 
     def readAdjacency(self, m: Diagram, root) -> bool:
-        pass
-
-    # bool DataReader::readAdjacency(self, m:Diagram, root)
-    # {
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     for (int i = 0; i < m->p(); i++)
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "entry")
-    #             {
-    #                 readOk = readEntry(m, node);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        readOk = False
+        adjacencies = list(root)
+        for i in range(m.p()):
+            if adjacencies[i].tag == "entry":
+                readOk = self.readEntry(m, adjacencies[i])
+        return readOk
 
     def readEntry(self, m: Diagram, root) -> bool:
-        pass
-
-    # bool DataReader::readEntry(self, m:Diagram, root)
-    # {
-    #     QDomAttr eAttr = root.toElement().attributeNode("e");
-    #     int e = eAttr.value().toInt();
-
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "orientation")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 readOk = false;
-    #                 if (!text.isNull())
-    #                 {
-    #                     m->edges[e].setOrientation(orienMap[text.nodeValue().stripWhiteSpace()]);
-    #                     readOk = true;
-    #                 }
-    #             }
-    #             if (node.nodeName() == "edge")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 readOk = false;
-    #                 if (!text.isNull())
-    #                 {
-    #                     // as a saftey take abs value of adjacent edge
-    #                     m->edges[e].setAdjEdgeId(abs(text.nodeValue().toInt()));
-    #                     readOk = true;
-    #                 }
-    #             }
-    #             if (node.nodeName() == "color_perm")
-    #             {
-    #                 readOk = readPerm(m, node, m->edges[e].colorPerm());
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        readOk = False
+        e = int(root.attrib["e"])
+        for attr in root:
+            if attr.tag == "orientation":
+                text = attr.text
+                if text:
+                    orientation = text.strip()
+                    m.edges[e].setOrientation(self.orienMap[orientation])
+                    readOk = True
+            elif attr.tag == "edge":
+                text = attr.text
+                if text:
+                    edge = int(text.strip())
+                    m.edges[e].setAdjEdgeId(edge)
+                    readOk = True
+            elif attr.tag == "color_perm":
+                readOk = self.readPerm(m, attr, m.edges[e].colorPerm())
+        return readOk
 
     def readElements(self, m: Diagram, root) -> bool:
-        pass
+        readOk = False
+        for element in root:
+            if element.tag == "elem":
+                readOk = self.readElement(m, element)
+        return readOk
 
-    # bool DataReader::readElements(self, m:Diagram, root)
-    # {
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "elem")
-    #             {
-    #                 readOk = readElem(m, node);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+    def readElement(self, m: Diagram, root) -> bool:
+        """_summary_
 
-    def readElem(self, m: Diagram, root) -> bool:
-        read_ok = False
+        Args:
+            m (Diagram): _description_
+            root (_type_): _description_
+
+        Returns:
+            bool: _description_
+        """
+        readOk = False
         z_order = 1  # start with a low z-order
-        e = 0
-        # TODO: Check that these are the correct attributes references
-        type_attr = root.attribute["type"].value()
-        if not self.elemTypeMap.contains(type_attr):
+        type_attr = root.attrib["type"]
+        if type_attr not in self.elemTypeMap:
             return False
         e = self.createElementObject(self.elemTypeMap[type_attr])
         if not e:
             return False
-        node = root.firstChild()
-        # Editied to here
-        while not node.isNull():
-            if node.isElement():
-                read_ok = False
-                if node.nodeName() == "z_order":
-                    z_order = node.firstChild().toText().nodeValue().toInt()
-                    read_ok = True
-                if node.nodeName() == "color":
-                    color_attr = (
-                        node.firstChild().toText().nodeValue().stripWhiteSpace()
-                    )
-                    if not self.colorMap.contains(color_attr):
-                        return False
-                    e.setColor(self.colorMap[color_attr])
-                    read_ok = True
-                if node.nodeName() == "perm":
-                    perm = Permutation(m.numColors())
-                    read_ok = self.readPerm(m, node, perm)
-                    e.setPerm(perm)
-                if node.nodeName() == "adjacency":
-                    read_ok = self.readAdjacency(m, node)
-                if node.nodeName() == "label":
-                    label = node.firstChild().toText().nodeValue().stripWhiteSpace()
-                    e.setLabel(label)
-                    read_ok = True
-            node = node.nextSibling()
+        for element in root:
+            if element.tag == "fill":
+                text = element.text
+                if text:
+                    is_filled = text.strip() == "true"
+                    e.setFilled(is_filled)
+                    readOk = True
+            elif element.tag == "cid":
+                text = element.text
+                if text:
+                    cid = int(text.strip())
+                    e.setCid(cid)
+                    readOk = True
+            elif element.tag == "points":
+                readOk = self.readPoints(element, e)
+        e.setZOrder(z_order)
+        z_order += 1
+        m.fundPat().addElement(e)
+        return readOk
 
-    # bool DataReader::readElem(self, m:Diagram, root)
-    # {
-    #     bool readOk = false;
-    #     static int zorder = 1; // start with a low zorder
-    #     ElementPtr e = 0;
-    #     QDomAttr typeAttr = root.toElement().attributeNode("type");
-    #     if (!elemTypeMap.contains(typeAttr.value()))
-    #         return readOk = false;
-    #     e = createElementObject(elemTypeMap[typeAttr.value()]);
-    #     if (!e)
-    #     {
-    #         return readOk = false;
-    #     }
+    def readPoints(self, root, e: Element) -> bool:
+        """_summary_
 
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "fill")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 readOk = false;
-    #                 if (!text.isNull())
-    #                 {
-    #                     if (text.nodeValue().stripWhiteSpace() == "true")
-    #                     {
-    #                         e->setFilled(true);
-    #                     }
-    #                     else
-    #                     {
-    #                         e->setFilled(false);
-    #                     }
-    #                     readOk = true;
-    #                 }
-    #             }
-    #             if (node.nodeName() == "cid")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 readOk = false;
-    #                 if (!text.isNull())
-    #                 {
-    #                     e->setCid(text.nodeValue().toInt());
-    #                     readOk = true;
-    #                 }
-    #             }
-    #             if (node.nodeName() == "points")
-    #             {
-    #                 readOk = readPoints(node, e);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     e->setZOrder(zorder);
-    #     zorder++; // put next element to the front of the previous
-    #     m->fundPat().addElement(e);
-    #     delete e; // safe to delete e now that it is added
-    #     return readOk;
-    # }
+        Args:
+            root (_type_): _description_
+            e (Element): _description_
 
-    def readPoints(self, root, e: ElementPtr) -> bool:
-        pass
+        Returns:
+            bool: _description_
+        """
+        readOk = False
+        for point in root:
+            if point.tag == "pt":
+                readOk, x, y = self.readPoint(point)
+                pt = Point(x, y)
+                pt.poincareToWeierstrass()
+                e.addPoint(pt)
+        return readOk
 
-    # bool DataReader::readPoints(root, ElementPtr e)
-    # {
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "pt")
-    #             {
-    #                 double x = 0.0, y = 0.0;
-    #                 readOk = readPt(node, x, y);
-    #                 Point pt(x, y);
-    #                 pt.poincareToWeierstrass(); // convert to Weierstrass as we read
-    #                 e->addPoint(pt);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+    def readPoint(self, root) -> bool:
+        """_summary_
 
-    def readPt(self, root, x: float, y: float) -> bool:
-        pass
+        Args:
+            root (_type_): _description_
 
-    # bool DataReader::readPt(root, double &x, double &y)
-    # {
-    #     bool readOk = false;
-    #     QDomNode node = root.firstChild();
-    #     while (!node.isNull())
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "x")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 readOk = false;
-    #                 if (!text.isNull())
-    #                 {
-    #                     x = text.nodeValue().toDouble();
-    #                     readOk = true;
-    #                 }
-    #             }
-    #             if (node.nodeName() == "y")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 readOk = false;
-    #                 if (!text.isNull())
-    #                 {
-    #                     y = text.nodeValue().toDouble();
-    #                     readOk = true;
-    #                 }
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        Returns:
+            bool: _description_
+        """
+        readOk, x, y = False, 0.0, 0.0
+        for coord in root:
+            if coord.tag == "x":
+                text = coord.text.strip()
+                if text:
+                    x = float(coord.text)
+                    readOk = True
+            elif coord.tag == "y":
+                text = coord.text.strip()
+                if text:
+                    y = float(coord.text)
+                    readOk = True
+        return readOk, x, y
 
-    def createElementObject(self, type: ElemType) -> ElementPtr:
-        pass
+    def createElementObject(self, type: ElemType) -> Element:
+        """_summary_
 
-    # ElementPtr DataReader::createElementObject(ElemType type)
-    # {
-    #     ElementPtr e = 0;
-    #     switch (type)
-    #     {
-    #     case EUCLID_POLYLINE:
-    #         e = new EuclidPolyLine();
-    #         break;
-    #     case EUCLID_POLY:
-    #         e = new EuclidPoly();
-    #         break;
-    #     case CIRCLE:
-    #         e = new Circle();
-    #         break;
-    #     case HYPER_POLYLINE:
-    #         e = new HyperPolyLine();
-    #         break;
-    #     case HYPER_POLY:
-    #         e = new HyperPoly();
-    #         break;
-    #     case ELEMENT:
-    #         throw "Unexpected ElemType";
-    #     }
-    #     return e;
-    # }
+        Args:
+            type (ElemType): _description_
+
+        Raises:
+            NotImplementedError: _description_
+
+        Returns:
+            Element: _description_
+        """
+        if type == ElemType.EUCLID_POLYLINE:
+            return EuclidPolyLine()
+        elif type == ElemType.EUCLID_POLY:
+            return EuclidPoly()
+        elif type == ElemType.CIRCLE:
+            return Circle()
+        elif type == ElemType.HYPER_POLYLINE:
+            return HyperPolyLine()
+        elif type == ElemType.HYPER_POLY:
+            return HyperPoly()
+        elif type == ElemType.ELEMENT:
+            # TODO: Implement this
+            raise NotImplementedError
 
 
 class DataReaderRegularPgon(DataReader):
@@ -529,96 +352,55 @@ class DataReaderRegularPgon(DataReader):
         super().__init__()
 
     def readXML(self, doc):
-        pass
+        """_summary_
 
+        Args:
+            doc (_type_): _description_
 
-#     Diagram *DataReaderRegularPgon::readXML(QDomDocument &doc)
-# {
-#     RegularPgon *m = new RegularPgon();
+        Returns:
+            _type_: _description_
+        """
+        m = RegularPgon()
 
-#     QDomElement root = doc.documentElement();
-#     if (root.tagName() != "design")
-#     {
-#         qWarning("Not a valid motif xml document");
-#         return 0;
-#     }
+        if doc.tag != "design":
+            log.warning("Not a valid motif xml document.")
+            return None
 
-#     Diagram *d = dynamic_cast<Diagram *>(m);
-#     QDomNode node;
-#     node = root.firstChild();
-#     bool readOk = true;
-#     while (!node.isNull() && readOk)
-#     {
-#         if (node.isElement())
-#         {
-#             readOk = false;
-#             if (node.nodeName() == "metadata")
-#             {
-#                 readOk = readMetadata(m, node);
-#             }
-#             if (node.nodeName() == "p")
-#             {
-#                 QDomText text = node.firstChild().toText();
-#                 if (!text.isNull())
-#                 {
-#                     m->setP(text.nodeValue().toInt());
-#                 }
-#                 readOk = true;
-#             }
-#             if (node.nodeName() == "q")
-#             {
-#                 QDomText text = node.firstChild().toText();
-#                 if (!text.isNull())
-#                 {
-#                     m->setQ(text.nodeValue().toInt());
-#                 }
-#                 readOk = true;
-#             }
-#             if (node.nodeName() == "fund_reg_edges")
-#             {
-#                 QDomText text = node.firstChild().toText();
-#                 if (!text.isNull())
-#                 {
-#                     m->setFundRegEdges(text.nodeValue().toInt());
-#                 }
-#                 readOk = true;
-#             }
-
-#             if (node.nodeName() == "refl_sym_type")
-#             {
-#                 QDomText text = node.firstChild().toText();
-#                 if (!text.isNull())
-#                 {
-#                     m->setReflSym(reflSymMap[text.nodeValue().stripWhiteSpace()]);
-#                 }
-#                 readOk = true;
-#             }
-
-#             if (node.nodeName() == "color_perm_rotn")
-#             {
-#                 readOk = readPerm(d, node, m->rotnColorPerm());
-#             }
-#             if (node.nodeName() == "color_perm_refl")
-#             {
-#                 readOk = readPerm(d, node, m->reflColorPerm());
-#             }
-#             if (node.nodeName() == "adjacency")
-#             {
-#                 readOk = readAdjacency(d, node);
-#             }
-#             if (node.nodeName() == "elements")
-#             {
-#                 readOk = readElements(d, node);
-#             }
-#         }
-#         node = node.nextSibling();
-#     }
-#     if (readOk)
-#     {
-#         return m;
-#     }
-#     return 0;
-# }
+        # diagram = copy.deepcopy(m)  # do I really need this?
+        for doc_element in doc:
+            if doc_element.tag == "metadata":
+                readOk = self.readMetadata(m, doc_element)
+            elif doc_element.tag == "p":
+                text = doc_element.text
+                if text:
+                    m.setP(int(text.strip()))
+                readOk = True
+            elif doc_element.tag == "q":
+                text = doc_element.text
+                if text:
+                    m.setQ(int(text.strip()))
+                readOk = True
+            elif doc_element.tag == "fund_reg_edges":
+                text = doc_element.text
+                if text:
+                    fund_reg_edges = int(text.strip())
+                    m.setFundRegEdges(fund_reg_edges)
+            elif doc_element.tag == "refl_sym_type":
+                text = doc_element.text
+                if text:
+                    text = text.strip()
+                    m.setReflSym(self.reflSymMap[text])
+            elif doc_element.tag == "color_perm_rotn":
+                readOk = self.readPerm(m, doc_element, m.rotnColorPerm())
+            elif doc_element.tag == "color_perm_refl":  # Stop Here
+                readOk = self.readPerm(m, doc_element, m.reflColorPerm())
+            elif doc_element.tag == "adjacency":
+                readOk = self.readAdjacency(m, doc_element)
+            elif doc_element.tag == "elements":
+                readOk = self.readElements(m, doc_element)
+        if readOk:
+            return m
+        return 0
 
 
 class DataReaderIrregularPgon(DataReader):
@@ -626,102 +408,74 @@ class DataReaderIrregularPgon(DataReader):
         super().__init__()
 
     def readQlist(self, m, root):
-        pass
+        """_summary_
 
-    # bool DataReaderIrregularPgon::readQlist(IrregularPgon *m, root)
-    # {
-    #     bool readOk = true;
-    #     QDomNode node = root.firstChild();
-    #     for (int i = 0; readOk && i < m->p(); i++)
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             if (node.nodeName() == "q")
-    #             {
-    #                 int qval;
-    #                 readOk = readQ(node, qval);
-    #                 if (readOk)
-    #                 {
-    #                     m->setQ(i, qval);
-    #                 }
-    #                 else
-    #                 {
-    #                     qWarning("Failed to read q value");
-    #                 }
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     return readOk;
-    # }
+        Args:
+            m (_type_): _description_
+            root (_type_): _description_
 
-    def readQ(self, root, qval):
-        pass
+        Returns:
+            _type_: _description_
+        """
+        readOk = True
 
-    # bool DataReaderIrregularPgon::readQ(root, int &qval)
-    # {
-    #     QDomText text = root.firstChild().toText();
-    #     if (!text.isNull())
-    #     {
-    #         qval = text.nodeValue().toInt();
-    #         return true;
-    #     }
-    #     return false;
-    # }
+        root_elements = list(root)
+        for i in range(m.p()):
+            if root_elements[i].tag == "q":
+                readOk, qval = self.readQ(root_elements[i])
+                if readOk:
+                    m.setQ(i, qval)
+                else:
+                    log.warning("Failed to read q value.")
+        return readOk
+
+    def readQ(self, root):
+        """_summary_
+
+        Args:
+            root (_type_): _description_
+            qval (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        text = root.text
+        if text:
+            qval = int(text.strip())
+            return True, qval
+        return False, 0
+
     def readXML(self, doc):
-        pass
+        """_summary_
 
-    # Diagram *DataReaderIrregularPgon::readXML(QDomDocument &doc)
-    # {
-    #     IrregularPgon *m = new IrregularPgon();
+        Args:
+            doc (_type_): _description_
 
-    #     QDomElement root = doc.documentElement();
-    #     if (root.tagName() != "design")
-    #     {
-    #         qWarning("Not a valid 'had' document");
-    #         return 0;
-    #     }
+        Returns:
+            _type_: _description_
+        """
+        m = IrregularPgon()
 
-    #     Diagram *d = dynamic_cast<Diagram *>(m);
-    #     QDomNode node;
-    #     node = root.firstChild();
-    #     bool readOk = true;
-    #     while (!node.isNull() && readOk)
-    #     {
-    #         if (node.isElement())
-    #         {
-    #             readOk = false;
-    #             if (node.nodeName() == "metadata")
-    #             {
-    #                 readOk = readMetadata(d, node);
-    #             }
-    #             if (node.nodeName() == "p")
-    #             {
-    #                 QDomText text = node.firstChild().toText();
-    #                 if (!text.isNull())
-    #                 {
-    #                     m->setP(text.nodeValue().toInt());
-    #                 }
-    #                 readOk = true;
-    #             }
-    #             if (node.nodeName() == "qlist")
-    #             {
-    #                 readOk = readQlist(m, node);
-    #             }
-    #             if (node.nodeName() == "adjacency")
-    #             {
-    #                 readOk = readAdjacency(d, node);
-    #             }
-    #             if (node.nodeName() == "elements")
-    #             {
-    #                 readOk = readElements(d, node);
-    #             }
-    #         }
-    #         node = node.nextSibling();
-    #     }
-    #     if (readOk)
-    #     {
-    #         return m;
-    #     }
-    #     return 0;
-    # }
+        if doc.tag != "design":
+            log.warning("Not a valid motif xml document.")
+            return None
+
+        # diagram = copy.deepcopy(m)  # do I really need this?
+        for doc_element in doc:
+            readOk = False
+            if doc_element.tag == "metadata":
+                readOk = self.readMetadata(m, doc_element)
+            elif doc_element.tag == "p":
+                text = doc_element.text
+                if text:
+                    m.setP(int(text.strip()))
+                readOk = True
+            elif doc_element.tag == "qlist":
+                readOk = self.readQlist(m, doc_element)
+            elif doc_element.tag == "adjacency":
+                readOk = self.readAdjacency(m, doc_element)
+            elif doc_element.tag == "elements":
+                readOk = self.readElements(m, doc_element)
+        if readOk:
+            return m
+        return 0

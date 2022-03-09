@@ -1,0 +1,21 @@
+- [ ] data_reader
+    - [x] DataReaderRegularPgon(DataReader)
+    - [ ] DataReaderIrregularPgon(DataReader)
+- [ ] regular_pgon
+- [ ] irregular_pgon
+- [x,] matrix
+- [ ] defs
+- [ ] hyperart_window
+- [ ] element
+- [ ] permutation
+- [ ] transformation
+- [ ] diagram
+- [ ] canvaselemnts
+- [ ] diagramview
+- [ ] layer
+- [ ] parameters
+- [ ] pgonedge
+- [ ] poincareview
+- [ ] qdocument
+- [ ] qdocviewer
+- [ ] transformation
