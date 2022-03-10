@@ -139,10 +139,8 @@ class IrregularPgon(Diagram):
         """_summary_"""
         q_sum = self._q.sum()
         avg_q = (q_sum / self._p) + 1
-        self.cosP_i.resize(self._p, refcheck=False)
-        # TODO: Vectorize this:
-        for i in range(self._p):
-            self.cosP_i[i] = np.cos(np.pi / self._q[i])
+        self.cosP_i.resize(self._p, refcheck=False)  # I might not need this
+        self.cosP_i = np.cos(np.pi / self._q)
         x = np.sin(np.pi / self._p) / np.cos(np.pi / avg_q)
         x_old = x - self.F(x) / self.FPrime(x)
         while abs(x - x_old) > 1e-10:
@@ -290,14 +288,28 @@ class IrregularPgon(Diagram):
         # fundPat_.addElement(hpol, true, true);
 
     def F(self, x: float) -> float:
-        # TODO: Check that this works on vectors
-        sum = np.sum(np.arcsin(x * self.cosP_i)) - np.pi
-        return sum
+        """_summary_
+
+        Args:
+            x (float): _description_
+
+        Returns:
+            float: _description_
+        """
+        result = np.sum(np.arcsin(x * self.cosP_i)) - np.pi
+        return result
 
     def FPrime(self, x: float) -> float:
-        # TODO: Check that this works on vectors
-        sum = np.sum(self.cosP_i / np.sqrt(1 - (x * self.cosP_i) ** 2))
-        return sum
+        """_summary_
+
+        Args:
+            x (float): _description_
+
+        Returns:
+            float: _description_
+        """
+        result = np.sum(self.cosP_i / np.sqrt(1 - (x * self.cosP_i) ** 2))
+        return result
 
 
 # class IrregularPgon : public Diagram

@@ -8,8 +8,9 @@
   - [x] docstrings
 - [x] matrix
   - [x] docstrings
-
-- [ ] element
+- [x] element.
+  - [x] classes
+  - [x] docstrings
 - [ ] permutation
 - [ ] transformation
 
